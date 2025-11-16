@@ -1,0 +1,103 @@
+Goal:
+Create a fullstack web application for a laptop shop/service center that recommends laptops to customers based on their preferences. The app must be ready-to-run on Replit.
+
+Tech stack:
+- Frontend: React (CRA or Vite) with functional components and hooks. Use plain CSS or Tailwind. Responsive layout.
+- Backend: Node.js + Express. Use SQLite (via better-sqlite3 or sqlite3) or a JSON seed file for product data so it works on Replit without DB setup.
+- Optional: If Replit prefers a single-repo template, create a monorepo with /client and /server and a root start script.
+
+Core features (customer-facing):
+1. Landing / Search page:
+   - Filters: Purpose (multi-select: Office, Student, Gaming, Content Creation, Business), RAM (8, 16, 32+), Storage Type (SSD/HDD), Storage Size options (256, 512, 1TB...), CPU family/tier (Intel i3/i5/i7, Ryzen 3/5/7), Screen size (13/14/15/17), Brand (Dell, HP, Lenovo, Asus, Acer, Apple), and Price range slider (min/max).
+   - Quick presets: "Under ₹50,000", "Gaming", "Student Starter".
+   - Search free-text box to match model name or keywords.
+
+2. Results list:
+   - Show product cards with image, model name, snippet of specs, price (₹), and tags (e.g., Best for Gaming).
+   - Client-side filtering and server-side endpoints so filters are reflected in URL (query params) for sharing.
+   - Sorting: Price low→high, Price high→low, Best match (custom scoring).
+   - Pagination (or infinite scroll) with page size 8.
+
+3. Product detail (single page):
+   - Full specs, multiple images, price, "Add to Inquiry" and "Contact Us" CTA, and similar product suggestions.
+
+4. Inquiry / Cart:
+   - Customers can save selected laptops to an "Inquiry" list and submit a contact form (name, phone, email, message). Submissions stored server-side (in DB or JSON file) and send a confirmation response. No real email delivery required, but include an email-template.
+
+5. Favorites:
+   - Allow saving favorites in localStorage (persist across sessions on same browser).
+
+Admin features (simple protected page):
+- A password-protected/admin route (simple passphrase config variable is OK) to Add/Edit/Delete products and view Inquiry submissions.
+- Fields: id, brand, model, purpose tags, ram, storage_type, storage_size, cpu, screen_size, gpu (optional), price, images (URLs), description, availability, and created_at.
+
+Data & sample dataset:
+- Include a seed dataset of at least 20 example laptops covering price bands and purposes. Provide it as `data/products.json` or a seeded SQLite table. Example entry format:
+  {
+    "id": "lap-001",
+    "brand": "Dell",
+    "model": "Inspiron 15 5000",
+    "price": 45990,
+    "ram_gb": 8,
+    "storage_type": "SSD",
+    "storage_gb": 512,
+    "cpu": "Intel i5-1135G7",
+    "purpose": ["Office", "Student"],
+    "screen_in": 15.6,
+    "image": "https://example.com/img1.jpg",
+    "description": "Good all-rounder for office and study"
+  }
+
+API endpoints (suggested):
+- GET /api/products?purpose=&minPrice=&maxPrice=&ram=&storageType=&cpu=&q=&sort=&page=&limit=
+- GET /api/products/:id
+- POST /api/inquiries  (save inquiry)
+- GET /api/admin/inquiries  (admin-only)
+- POST /api/admin/products  (admin add)
+- PUT /api/admin/products/:id  (admin edit)
+- DELETE /api/admin/products/:id
+
+UX & UI:
+- Clean, modern, mobile-first responsive UI with accessible controls.
+- Filter panel on left (desktop) and collapsible on mobile.
+- Each product card highlights the reason it matches (e.g., “Matches RAM and Price”).
+- Show number of results and active filter chips that can be cleared.
+
+Matching/Scoring logic:
+- Implement a simple match score:
+  - +3 points if purpose matches,
+  - +2 if RAM >= requested RAM,
+  - +2 if storage type/size matches,
+  - +1 for brand preference,
+  - -1 if price > maxPrice.
+- Sort by score desc then price asc when user chooses "Best match".
+
+Testing & quality:
+- Include basic unit or integration tests (Jest or vitest) for:
+  - API product filtering logic (at least 5 test cases),
+  - Frontend filter UI updates and results rendering.
+- Add a README with run/build/deploy instructions for Replit.
+
+Deployment:
+- A single command to run both server and client (e.g., concurrently or from root `start` script). Document how to deploy on Replit (command to run server and client, environment variable for admin passphrase).
+- Use environment variables for admin passphrase and port.
+
+Acceptance criteria (what must work on first run):
+1. Visiting `/` shows the search/filter UI and at least 8 seeded products.
+2. Applying filters updates results and URL query params.
+3. Clicking a product opens details page with full specs.
+4. Inquiry can be submitted and visible on admin inquiries page.
+5. Admin can add a new product and it appears in search results.
+6. App is responsive and usable on mobile.
+
+Extras (optional, but nice-to-have):
+- Autocomplete suggestions while typing model name.
+- Export inquiries as CSV from admin.
+- Simple analytics dashboard for popular filters.
+
+Please create:
+- A running project with code (client + server).
+- `data/products.json` or an SQLite file seeded with the 20 example laptops.
+- `README.md` with how to run locally on Replit and how to change admin passphrase.
+- Minimal tests and a checklist confirming acceptance criteria.
+
